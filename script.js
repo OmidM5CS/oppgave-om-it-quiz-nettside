@@ -1,10 +1,5 @@
-// ==========================================
-// 1. DEFINISJON AV SPØRSMÅL (Matrise/Liste)
-// TEMAER: Webutvikling, Internett og Drift
-// ==========================================
 const quizDatabase = [
   {
-    // 1. Webutvikling
     question:
       "Hvilken HTML-tagg brukes for å lage den aller største overskriften på en nettside?",
     type: "mc",
@@ -16,7 +11,6 @@ const quizDatabase = [
     ],
   },
   {
-    // 2. Internett / Nettverk
     question:
       "Hvilken protokoll brukes for å sende kryptert og sikker webtrafikk på internett?",
     type: "mc",
@@ -28,7 +22,6 @@ const quizDatabase = [
     ],
   },
   {
-    // 3. IT-Drift / Maskinvare
     question: "Hva står forkortelsen CPU for på en datamaskin?",
     type: "text",
     correctAnswers: [
@@ -37,7 +30,6 @@ const quizDatabase = [
     ],
   },
   {
-    // 4. Webutvikling / CSS
     question:
       "Hvilken CSS-egenskap bruker man for å endre bakgrunnsfargen til et element?",
     type: "text",
@@ -48,7 +40,6 @@ const quizDatabase = [
     ],
   },
   {
-    // 5. Internett
     question: "Hva står forkortelsen DNS for?",
     type: "mc",
     options: [
@@ -59,7 +50,6 @@ const quizDatabase = [
     ],
   },
   {
-    // 6. IT-Drift
     question:
       "Hva kalles den unike, fysiske maskinvare-adressen som er brent inn i nettverkskortet på en enhet?",
     type: "text",
@@ -71,7 +61,6 @@ const quizDatabase = [
     ],
   },
   {
-    // 7. IT-Drift / Nettverk
     question:
       "Hvilken tjeneste på en ruter deler ut IP-adresser automatisk til enheter som kobler seg på nettverket?",
     type: "mc",
@@ -84,20 +73,15 @@ const quizDatabase = [
   },
 ];
 
-// ==========================================
-// 2. GLOBALE VARIABLER OG TILSTAND
-// ==========================================
 let activeQuestions = [];
 let currentQuestionIndex = 0;
 let userAnswers = {};
 let questionPoints = {};
 
-// Timer-variabler
 let timerInterval;
 const maxTimePerQuestion = 15;
 let timeLeft = maxTimePerQuestion;
 
-// DOM-Elementer
 const startScreen = document.getElementById("start-screen");
 const quizScreen = document.getElementById("quiz-screen");
 const resultScreen = document.getElementById("result-screen");
@@ -114,21 +98,14 @@ const timerBar = document.getElementById("timer-bar");
 const scoreText = document.getElementById("score-text");
 const highscoreList = document.getElementById("highscore-list");
 
-// ==========================================
-// 3. HJELPEFUNKSJONER (Stokking)
-// ==========================================
 function shuffleArray(array) {
   return array.sort(() => Math.random() - 0.5);
 }
 
-// ==========================================
-// 4. QUIZ LOGIKK & NAVIGASJON
-// ==========================================
 function startQuiz() {
   let shuffled = shuffleArray([...quizDatabase]);
   activeQuestions = shuffled.slice(0, 5);
 
-  // FIKSET FEIL: Sjekker nå nøye om 'options' eksisterer før den stokker om
   activeQuestions.forEach((q) => {
     if (q.type === "mc" && q.options) {
       q.options = shuffleArray([...q.options]);
@@ -236,9 +213,6 @@ function showQuestion() {
   startTimer();
 }
 
-// ==========================================
-// 5. TIMER / TIDSBONUS LOGIKK
-// ==========================================
 function startTimer() {
   timeLeft = maxTimePerQuestion;
   timerBar.style.width = "100%";
@@ -264,9 +238,6 @@ function startTimer() {
   }, 100);
 }
 
-// ==========================================
-// 6. HÅNDTERING AV SVAR UNDERVEIS
-// ==========================================
 function handleNext() {
   if (questionPoints[currentQuestionIndex] === undefined) {
     questionPoints[currentQuestionIndex] = 0;
@@ -305,9 +276,6 @@ function showResults() {
   displayHighscores();
 }
 
-// ==========================================
-// 7. HIGHSCORE LAGRING (localStorage)
-// ==========================================
 function saveHighscore(score) {
   let scores = JSON.parse(localStorage.getItem("quizHighscores")) || [];
 
@@ -336,10 +304,7 @@ function displayHighscores() {
     highscoreList.appendChild(li);
   });
 }
-
-// ==========================================
-// 8. EVENT LISTENERS (Knappetrykk)
-// ==========================================
+d;
 startBtn.onclick = () => {
   startQuiz();
 };
