@@ -1,18 +1,50 @@
 <!doctype html>
-<html lang="en">
+<html lang="no">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>IT-relatert Quiz-nettside</title>
+    <title>IT-Drift Quiz | 2IT</title>
     <link rel="stylesheet" href="style.css" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap"
-      rel="stylesheet"
-    />
   </head>
   <body>
-    <h1>Velkommen til den IT-relaterte Quiz-nettsiden.</h1>
-    <p>Denne quizen inneholder 10 ulike spørsmål.</p>
+    <div class="quiz-container">
+      <div id="start-screen" class="screen active">
+        <h1>Velkommen til IT-Drift Quizen.</h1>
+        <p>Det er 7 spørsmål totalt. Prøv å svare på alle spørsmålene.</p>
+        <p>Test kunnskapen din innenfor informasjonsteknologi.</p>
+        <button id="start-btn" class="btn">Start Quizen</button>
+      </div>
+
+      <div id="quiz-screen" class="screen">
+        <div class="timer-container">
+          <div id="timer-bar"></div>
+        </div>
+
+        <div class="quiz-header">
+          <span id="question-number">Spørsmål 1 av 7</span>
+        </div>
+
+        <h2 id="question-text">Spørsmålstekst skal være her.</h2>
+        <div id="answer-container"></div>
+
+        <div class="navigation-controls">
+          <button id="prev-btn" class="btn btn-secondary">← Forrige</button>
+          <button id="next-btn" class="btn">Neste</button>
+        </div>
+      </div>
+
+      <div id="result-screen" class="screen">
+        <h1>Resultat</h1>
+        <p id="score-text">Du fikk 0 poeng.</p>
+        <button id="restart-btn" class="btn">Prøv på nytt</button>
+
+        <div class="highscore-container">
+          <h3>Siste forsøk (Highscores).</h3>
+          <ul id="highscore-list"></ul>
+        </div>
+      </div>
+    </div>
+
     <script src="script.js"></script>
   </body>
 </html>
