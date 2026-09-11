@@ -1,87 +1,71 @@
+// ==========================================
+// 1. SPØRSMÅLSLISTE (Web, Internett og Drift)
+// ==========================================
 const quizDatabase = [
   {
     question:
       "Hvilken HTML-tagg brukes for å lage den aller største overskriften på en nettside?",
     type: "mc",
-    options: [
-      { text: "<h1> (Helt riktig)", points: 3 },
-      { text: "<heading>", points: 0 },
-      { text: "<h6> (Dette er den minste overskriften)", points: 1 },
-      { text: "<title>", points: 0 },
-    ],
+    options: ["<h1>", "<heading>", "<h6>", "<title>"],
+    correctAnswer: "<h1>",
   },
   {
     question:
       "Hvilken protokoll brukes for å sende kryptert og sikker webtrafikk på internett?",
     type: "mc",
-    options: [
-      { text: "HTTPS (Helt riktig)", points: 3 },
-      { text: "HTTP (Dette er ukryptert)", points: 1 },
-      { text: "FTP", points: 0 },
-      { text: "IP", points: 0 },
-    ],
+    options: ["HTTPS", "HTTP", "FTP", "IP"],
+    correctAnswer: "HTTPS",
   },
   {
     question: "Hva står forkortelsen CPU for på en datamaskin?",
     type: "text",
-    correctAnswers: [
-      { text: "central processing unit", points: 3 },
-      { text: "central hardware unit", points: 0 },
-    ],
+    correctAnswers: ["central processing unit", "cpu"],
   },
   {
     question:
       "Hvilken CSS-egenskap bruker man for å endre bakgrunnsfargen til et element?",
     type: "text",
-    correctAnswers: [
-      { text: "background-color", points: 3 },
-      { text: "background color", points: 3 },
-      { text: "color", points: 1 },
-    ],
+    correctAnswers: ["background-color", "background color"],
   },
   {
     question: "Hva står forkortelsen DNS for?",
     type: "mc",
     options: [
-      { text: "Domain Name System (Helt riktig)", points: 3 },
-      { text: "Data Network Server", points: 0 },
-      { text: "Digital Name Service", points: 1 },
-      { text: "Dynamic Network System", points: 0 },
+      "Domain Name System",
+      "Data Network Server",
+      "Digital Name Service",
+      "Dynamic Network System",
     ],
+    correctAnswer: "Domain Name System",
   },
   {
     question:
       "Hva kalles den unike, fysiske maskinvare-adressen som er brent inn i nettverkskortet på en enhet?",
     type: "text",
-    correctAnswers: [
-      { text: "mac-adresse", points: 3 },
-      { text: "mac adresse", points: 3 },
-      { text: "mac", points: 3 },
-      { text: "ip-adresse", points: 1 },
-    ],
+    correctAnswers: ["mac-adresse", "mac adresse", "mac"],
   },
   {
     question:
-      "Hvilken tjeneste på en ruter deler ut IP-adresser automatisk til enheter som kobler seg på nettverket?",
+      "Hvilken tjeneste på en ruter deler ut IP-adresser automatisk til enheter som kobler seg på?",
     type: "mc",
     options: [
-      { text: "DHCP-serveren (Helt riktig)", points: 3 },
-      { text: "Brannmuren (Firewall)", points: 0 },
-      { text: "DNS-serveren", points: 1 },
-      { text: "Switchen", points: 0 },
+      "DHCP-serveren",
+      "Brannmuren (Firewall)",
+      "DNS-serveren",
+      "Switchen",
     ],
+    correctAnswer: "DHCP-serveren",
   },
 ];
 
+// ==========================================
+// 2. GLOBALE VARIABLER
+// ==========================================
 let activeQuestions = [];
 let currentQuestionIndex = 0;
-let userAnswers = {};
-let questionPoints = {};
+let userAnswers = {}; // Lagrer tekst eller valgt alternativ streng-verdi
 
-let timerInterval;
-const maxTimePerQuestion = 15;
-let timeLeft = maxTimePerQuestion;
-
+// DOM-Elementer fra index.html
 const startScreen = document.getElementById("start-screen");
 const quizScreen = document.getElementById("quiz-screen");
 const resultScreen = document.getElementById("result-screen");
@@ -94,27 +78,20 @@ const restartBtn = document.getElementById("restart-btn");
 const questionNumberText = document.getElementById("question-number");
 const questionText = document.getElementById("question-text");
 const answerContainer = document.getElementById("answer-container");
-const timerBar = document.getElementById("timer-bar");
 const scoreText = document.getElementById("score-text");
 const highscoreList = document.getElementById("highscore-list");
 
-function shuffleArray(array) {
-  return array.sort(() => Math.random() - 0.5);
-}
-
+// ==========================================
+// 3. QUIZ LOGIKK & NAVIGASJON
+// ==========================================
 function startQuiz() {
-  let shuffled = shuffleArray([...quizDatabase]);
+  // Stokker databasen og henter ut 5 tilfeldige spørsmål
+  let shuffled = [...quizDatabase].sort(() => Math.random() - 0.5);
   activeQuestions = shuffled.slice(0, 5);
 
-  activeQuestions.forEach((q) => {
-    if (q.type === "mc" && q.options) {
-      q.options = shuffleArray([...q.options]);
-    }
-  });
-
+  // Nullstiller runden
   currentQuestionIndex = 0;
   userAnswers = {};
-  questionPoints = {};
 
   switchScreen(startScreen, quizScreen);
   showQuestion();
@@ -124,39 +101,30 @@ function switchScreen(fromScreen, toScreen) {
   fromScreen.classList.remove("active");
   toScreen.classList.add("active");
   toScreen.classList.add("fade-in");
-  setTimeout(() => {
-    toScreen.classList.remove("fade-in");
-  }, 300);
+  setTimeout(() => toScreen.classList.remove("fade-in"), 300);
 }
 
 function showQuestion() {
-  clearInterval(timerInterval);
-
   const currentQuestion = activeQuestions[currentQuestionIndex];
 
+  // Oppdaterer tekster på skjermen
   questionNumberText.innerText = `Spørsmål ${currentQuestionIndex + 1} av 5`;
   questionText.innerText = currentQuestion.question;
   answerContainer.innerHTML = "";
 
-  if (currentQuestionIndex === 0) {
-    prevBtn.style.visibility = "hidden";
-  } else {
-    prevBtn.style.visibility = "visible";
-  }
+  // Styring av Forrige-knapp
+  prevBtn.style.visibility = currentQuestionIndex === 0 ? "hidden" : "visible";
+  nextBtn.innerText =
+    currentQuestionIndex === activeQuestions.length - 1 ? "Fullfør" : "Neste →";
 
-  if (currentQuestionIndex === activeQuestions.length - 1) {
-    nextBtn.innerText = "Fullfør";
-  } else {
-    nextBtn.innerText = "Neste →";
-  }
-
+  // Bygger svargrensesnitt
   if (currentQuestion.type === "mc") {
-    currentQuestion.options.forEach((option, index) => {
+    currentQuestion.options.forEach((option) => {
       const button = document.createElement("button");
       button.classList.add("option-btn");
-      button.innerText = option.text;
+      button.innerText = option;
 
-      if (userAnswers[currentQuestionIndex] === index) {
+      if (userAnswers[currentQuestionIndex] === option) {
         button.classList.add("selected");
       }
 
@@ -165,16 +133,8 @@ function showQuestion() {
         for (let b of buttons) b.classList.remove("selected");
 
         button.classList.add("selected");
-        userAnswers[currentQuestionIndex] = index;
-
-        let basePoints = option.points;
-        let bonus = 0;
-        if (basePoints > 0) {
-          bonus = Math.round((timeLeft / maxTimePerQuestion) * 2);
-        }
-        questionPoints[currentQuestionIndex] = basePoints + bonus;
+        userAnswers[currentQuestionIndex] = option; // Lagrer teksten brukeren valgte
       };
-
       answerContainer.appendChild(button);
     });
   } else if (currentQuestion.type === "text") {
@@ -188,68 +148,19 @@ function showQuestion() {
     }
 
     input.oninput = () => {
-      let typedText = input.value;
-      userAnswers[currentQuestionIndex] = typedText;
-
-      if (typedText.trim() !== "") {
-        let match = currentQuestion.correctAnswers.find(
-          (ans) => ans.text.toLowerCase() === typedText.trim().toLowerCase(),
-        );
-
-        if (match) {
-          let bonus = Math.round((timeLeft / maxTimePerQuestion) * 2);
-          questionPoints[currentQuestionIndex] = match.points + bonus;
-        } else {
-          questionPoints[currentQuestionIndex] = 0;
-        }
-      } else {
-        questionPoints[currentQuestionIndex] = 0;
-      }
+      userAnswers[currentQuestionIndex] = input.value; // Lagrer fortløpende det brukeren skriver
     };
-
     answerContainer.appendChild(input);
   }
-
-  startTimer();
-}
-
-function startTimer() {
-  timeLeft = maxTimePerQuestion;
-  timerBar.style.width = "100%";
-  timerBar.style.backgroundColor = "#34a853";
-
-  timerInterval = setInterval(() => {
-    timeLeft -= 0.1;
-    let percentage = (timeLeft / maxTimePerQuestion) * 100;
-    timerBar.style.width = `${percentage}%`;
-
-    if (percentage < 30) {
-      timerBar.style.backgroundColor = "#ea4335";
-    } else if (percentage < 60) {
-      timerBar.style.backgroundColor = "#fbbc05";
-    }
-
-    if (timeLeft <= 0) {
-      clearInterval(timerInterval);
-      if (questionPoints[currentQuestionIndex] === undefined) {
-        questionPoints[currentQuestionIndex] = 0;
-      }
-    }
-  }, 100);
 }
 
 function handleNext() {
-  if (questionPoints[currentQuestionIndex] === undefined) {
-    questionPoints[currentQuestionIndex] = 0;
-  }
-
   if (currentQuestionIndex < activeQuestions.length - 1) {
     currentQuestionIndex++;
     quizScreen.classList.add("fade-in");
     showQuestion();
     setTimeout(() => quizScreen.classList.remove("fade-in"), 300);
   } else {
-    clearInterval(timerInterval);
     showResults();
   }
 }
@@ -263,11 +174,26 @@ function handlePrevious() {
   }
 }
 
+// ==========================================
+// 4. BEREGNING OG HIGHSCORE
+// ==========================================
 function showResults() {
   let totalScore = 0;
-  for (let i = 0; i < activeQuestions.length; i++) {
-    totalScore += questionPoints[i] || 0;
-  }
+
+  activeQuestions.forEach((q, index) => {
+    let userAnswer = userAnswers[index] || "";
+
+    if (q.type === "mc") {
+      if (userAnswer === q.correctAnswer) {
+        totalScore += 3; // Riktig flervalg gir 3 poeng
+      }
+    } else if (q.type === "text") {
+      let match = q.correctAnswers.includes(userAnswer.trim().toLowerCase());
+      if (match) {
+        totalScore += 3; // Riktig tekstsvar gir 3 poeng
+      }
+    }
+  });
 
   scoreText.innerText = `Du fikk totalt ${totalScore} poeng!`;
 
@@ -278,7 +204,6 @@ function showResults() {
 
 function saveHighscore(score) {
   let scores = JSON.parse(localStorage.getItem("quizHighscores")) || [];
-
   const now = new Date();
   const timeString = `${now.toLocaleDateString()} kl. ${now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
 
@@ -304,15 +229,14 @@ function displayHighscores() {
     highscoreList.appendChild(li);
   });
 }
-d;
-startBtn.onclick = () => {
-  startQuiz();
-};
 
+// ==========================================
+// 5. EVENT LISTENERS (Knappekoblinger)
+// ==========================================
+startBtn.onclick = startQuiz;
 nextBtn.onclick = handleNext;
 prevBtn.onclick = handlePrevious;
-restartBtn.onclick = () => {
-  startQuiz();
-};
+restartBtn.onclick = startQuiz;
 
+// Viser lagrede highscores med en gang siden laster
 displayHighscores();
